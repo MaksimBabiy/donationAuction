@@ -1,5 +1,6 @@
 import axios from "axios";
 import { useAuthStore } from "../store/authStore";
+import { useDonationStore } from "../store/donationStore";
 
 export const createSocket = (newToken: string): WebSocket => {
   const ws = new WebSocket(
@@ -17,8 +18,6 @@ export const createSocket = (newToken: string): WebSocket => {
   };
   ws.onmessage = async (event) => {
     const data = JSON.parse(event.data);
-
-    console.log(data);
 
     if (data.id === 1 && data.result?.client) {
       const centrifugoClientId = data.result.client;
@@ -52,7 +51,14 @@ export const createSocket = (newToken: string): WebSocket => {
         })
       );
     } else if (data.result?.data?.data?.amount) {
-      console.log("New donation received:", data.result.data);
+      console.log(data.result.data.data);
+
+      useDonationStore.getState().setItem({
+        id: data.result.data.data.id,
+        price: data.result.data.data.amount_in_user_currency,
+        title: data.result.data.data.message,
+        author: data.result.data.data.name,
+      });
     }
   };
 

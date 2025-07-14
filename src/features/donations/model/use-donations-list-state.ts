@@ -3,10 +3,19 @@ import { useDonationStore } from "@/shared/store/donationStore";
 import { useEffect, useRef } from "react";
 
 export const useDonationsListState = () => {
-  const token = useDonationStore((s) => s.webSocket_token);
-  const socketRef = useRef<any>(null);
+  const token = useDonationStore((store) => store.webSocket_token);
+  const items = useDonationStore((store) => store.items);
+  const socketRef = useRef<WebSocket>(null);
 
-  if (token) socketRef.current = createSocket(token);
+  useEffect(() => {
+    if (!token) return;
+    const ws = createSocket(token);
+    socketRef.current = ws;
 
-  return { socket: socketRef.current };
+    return () => {
+      ws.close();
+    };
+  }, [token]);
+
+  return { items };
 };

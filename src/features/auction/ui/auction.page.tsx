@@ -3,9 +3,9 @@ import { useAuctionState } from "../model/use-auction-state";
 import AuctionInput from "./auctionInput";
 import AuctionList from "./auctionList";
 import AuctionTimer from "./auctionTimer";
+import DownloadButton from "@/features/downloadActionData/ui/downloadButton";
 
 const AuctionPage = () => {
-  const { data } = useAuctionState();
   const { totalPrice } = useAuctionState();
 
   return (
@@ -20,10 +20,11 @@ const AuctionPage = () => {
           </span>
         </div>
       </div>
-      <div className="flex-1 max-w-[400px]">
+      <div className="flex-1 max-w-[400px] gap-5 flex flex-col">
         <AuctionTimer />
         <DonationList />
       </div>
+      <DownloadButton />
     </div>
   );
 };

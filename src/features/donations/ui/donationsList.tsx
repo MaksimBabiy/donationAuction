@@ -1,12 +1,17 @@
-import React from "react";
 import { useDonationsListState } from "../model/use-donations-list-state";
+import DonationItem from "./donationItem";
 
-type Props = {};
+const DonationList = () => {
+  const { items } = useDonationsListState();
+  console.log(items);
 
-const DonationList = (props: Props) => {
-  const { socket } = useDonationsListState();
-
-  return <div>DonationList</div>;
+  return (
+    <ul>
+      {items?.map((item) => (
+        <DonationItem key={item.id} {...item} />
+      ))}
+    </ul>
+  );
 };
 
 export default DonationList;

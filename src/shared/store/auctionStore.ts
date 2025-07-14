@@ -21,7 +21,7 @@ export const useAuctionStore = create<AuctionSotore>()(
         totalPrice: 0,
         setItem: (item: AuctionItemType) => {
           set((state) => ({
-            items: state.items && [...state.items, item],
+            items: state.items ? [...state.items, item] : [item],
           }));
           get().refineTotalPrice();
           get().refinePercent();
