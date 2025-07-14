@@ -1,8 +1,9 @@
+import { refreshToken } from "@/shared/api/refreshToken";
 import { useIsAuthenticated } from "@/shared/hooks/useAuth";
 
 import { ROUTES } from "@/shared/model/routes";
 
-import { Navigate, Outlet } from "react-router";
+import { Navigate, Outlet, redirect } from "react-router";
 
 const ProtectedRoute = () => {
   const isAuth = useIsAuthenticated();
@@ -13,3 +14,10 @@ const ProtectedRoute = () => {
 };
 
 export default ProtectedRoute;
+
+export const ProtectedRouteLoader = async () => {
+  const token = await refreshToken();
+  console.log("token", token);
+
+  if (!token) return redirect(ROUTES.LOGIN);
+};

@@ -1,3 +1,4 @@
+import LogoutBtn from "@/features/auth/ui/logoutBtn";
 import Avatar from "@/features/avatar/ui/avatar";
 import { useIsAuthenticated } from "@/shared/hooks/useAuth";
 
@@ -11,7 +12,12 @@ const Header = () => {
           Donation Auk
         </span>
       </div>
-      {isAuth && <Avatar />}
+      {isAuth && (
+        <div className="flex gap-5">
+          <LogoutBtn />
+          <Avatar />
+        </div>
+      )}
     </header>
   );
 };

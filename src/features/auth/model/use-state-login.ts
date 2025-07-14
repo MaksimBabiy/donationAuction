@@ -5,23 +5,34 @@ import { ROUTES } from "@/shared/model/routes";
 import { exchengeToken } from "@/shared/api/mutations";
 
 export const useStateLogin = () => {
-    const link = `https://www.donationalerts.com/oauth/authorize?client_id=${import.meta.env.VITE_CLIENT_ID}&redirect_uri=${import.meta.env.VITE_REDIRECT_URI}&response_type=code&scope=${import.meta.env.VITE_SCOPE}`
-    const [searchParams] = useSearchParams();
-    const code = searchParams.get("code");
-    const navigate = useNavigate();
-    const setToken = useAuthStore((store) => store.setToken);
-    const useMutate = useMutation({
-        mutationFn: (code: string) => exchengeToken(code),
-        onSuccess: (data) => {
-          setToken(data.access_token);
-          navigate(ROUTES.HOME);
-        }
-    })
+  const link = `https://www.donationalerts.com/oauth/authorize?client_id=${
+    import.meta.env.VITE_CLIENT_ID
+  }&redirect_uri=${
+    import.meta.env.VITE_REDIRECT_URI
+  }&response_type=code&scope=${import.meta.env.VITE_SCOPE}`;
+
+  const [searchParams] = useSearchParams();
+  const code = searchParams.get("code");
+  const navigate = useNavigate();
+  const setToken = useAuthStore((store) => store.setToken);
+
+  const useMutate = useMutation({
+    mutationFn: (code: string) => exchengeToken(code),
+    onSuccess: (data) => {
+      setToken(data.access_token);
+      navigate(ROUTES.HOME);
+    },
+  });
+  const logOut = () => {
+    setToken(null);
+    navigate(ROUTES.LOGIN);
+  };
 
   return {
     code,
     mutate: useMutate.mutate,
     isPending: useMutate.isPending,
-    link
-  }
-} 
+    link,
+    logOut,
+  };
+};

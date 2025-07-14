@@ -4,7 +4,7 @@ import LoginPage from "@/features/auth/ui/login.page";
 import { ROUTES } from "@/shared/model/routes";
 import Providers from "./providers";
 import AuctionPage from "@/features/auction/ui/auction.page";
-import ProtectedRoute from "./protectedRoute";
+import ProtectedRoute, { ProtectedRouteLoader } from "./protectedRoute";
 import RequireUnauth from "./requireUnauth";
 import Header from "@/features/header/ui/header";
 
@@ -17,6 +17,7 @@ export const router = createBrowserRouter([
     ),
     children: [
       {
+        loader: ProtectedRouteLoader,
         element: (
           <>
             <Header />
