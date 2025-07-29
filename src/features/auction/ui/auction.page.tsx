@@ -4,6 +4,7 @@ import AuctionInput from "./auctionInput";
 import AuctionList from "./auctionList";
 import AuctionTimer from "./auctionTimer";
 import DownloadButton from "@/features/downloadActionData/ui/downloadButton";
+import { WheelButton } from "@/features/wheel";
 
 const AuctionPage = () => {
   const { totalPrice } = useAuctionState();
@@ -24,6 +25,8 @@ const AuctionPage = () => {
         <AuctionTimer />
         <DonationList />
       </div>
+
+      <WheelButton />
       <DownloadButton />
     </div>
   );

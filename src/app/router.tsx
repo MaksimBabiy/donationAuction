@@ -7,6 +7,7 @@ import AuctionPage from "@/features/auction/ui/auction.page";
 import ProtectedRoute, { ProtectedRouteLoader } from "./protectedRoute";
 import RequireUnauth from "./requireUnauth";
 import Header from "@/features/header/ui/header";
+import { WheelPage } from "@/features/wheel";
 
 export const router = createBrowserRouter([
   {
@@ -28,6 +29,10 @@ export const router = createBrowserRouter([
           {
             path: ROUTES.HOME,
             element: <AuctionPage />,
+          },
+          {
+            path: ROUTES.WHEEL,
+            element: <WheelPage />,
           },
         ],
       },

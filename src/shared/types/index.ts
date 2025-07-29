@@ -25,5 +25,5 @@ export type AuctionItemType = {
   title: string;
   author?: string;
   price: number;
-  percent: number;
+  percent?: number;
 };
