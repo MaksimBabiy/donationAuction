@@ -1,9 +1,8 @@
-import WheelSettings from "./wheelSettings";
 import { useWheelState } from "../model/use-wheel-state";
+import WheelSettings from "./wheelSettings";
 
-const ClassicWheel = () => {
-  const { canvasRef, handleRotate } = useWheelState("classic");
-
+const NewWheel = () => {
+  const { canvasRef, handleRotate } = useWheelState("new");
   return (
     <div className="flex justify-center items-center p-4">
       <canvas ref={canvasRef} />
@@ -12,4 +11,4 @@ const ClassicWheel = () => {
   );
 };
 
-export default ClassicWheel;
+export default NewWheel;

@@ -2,7 +2,9 @@ import { useWheelStore } from "@/shared/store/wheelStore";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 
-export const useWheelState = () => {
+type WheelType = "classic" | "new";
+
+export const useWheelState = (type: WheelType) => {
   const data = useWheelStore((store) => store.items);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const size = 800;
@@ -10,6 +12,7 @@ export const useWheelState = () => {
   const [spinning, setSpinning] = useState(false);
   const angleRef = useRef(angle);
   const spinningRef = useRef(spinning);
+  const removeItem = useWheelStore((store) => store.removeItem);
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   let animationFrame;
 
@@ -40,43 +43,82 @@ export const useWheelState = () => {
     const radius = size / 2 - 10;
     ctx.clearRect(0, 0, size, size);
 
-    const total = data.reduce((sum, item) => sum + item.price, 0);
+    let total: number;
     let startAngle = angleRef.current;
-    console.log(data);
+    if (type == "new") {
+      total = data.reduce((sum, item) => sum + 1 / item.price, 0);
+
+      data.forEach((item) => {
+        const sliceAngle = (1 / item.price / total) * Math.PI * 2;
+        const endAngle = startAngle + sliceAngle;
+
+        ctx.beginPath();
+        ctx.moveTo(centerX, centerY);
+        ctx.arc(centerX, centerY, radius, startAngle, endAngle);
+        ctx.closePath();
+        ctx.fillStyle = item.color;
+        ctx.fill();
+
+        // Border
+        ctx.strokeStyle = "#000";
+        ctx.lineWidth = 2;
+        ctx.stroke();
+
+        // Label
+        const midAngle = (startAngle + endAngle) / 2;
+        const textX = centerX + Math.cos(midAngle) * (radius * 0.75);
+        const textY = centerY + Math.sin(midAngle) * (radius * 0.75);
+        ctx.fillStyle = "#fff";
+        ctx.font = "14px sans-serif";
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+        ctx.save();
+        ctx.translate(textX, textY);
+        ctx.rotate(midAngle);
+        ctx.fillText(item.title, 0, 0);
+        ctx.restore();
+
+        startAngle = endAngle;
+      });
+    } else {
+      total = data.reduce((sum, item) => sum + item.price, 0);
+
+      data.forEach((item) => {
+        const sliceAngle = (item.price / total) * Math.PI * 2;
+        const endAngle = startAngle + sliceAngle;
+
+        ctx.beginPath();
+        ctx.moveTo(centerX, centerY);
+        ctx.arc(centerX, centerY, radius, startAngle, endAngle);
+        ctx.closePath();
+        ctx.fillStyle = item.color;
+        ctx.fill();
+
+        // Border between sectors
+        ctx.strokeStyle = "#000";
+        ctx.lineWidth = 2;
+        ctx.stroke();
+
+        // Label
+        const midAngle = (startAngle + endAngle) / 2;
+        const textX = centerX + Math.cos(midAngle) * (radius * 0.75);
+        const textY = centerY + Math.sin(midAngle) * (radius * 0.75);
+        ctx.fillStyle = "#fff";
+        ctx.font = "14px sans-serif";
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+        ctx.save();
+        ctx.translate(textX, textY);
+        ctx.rotate(midAngle);
+        ctx.fillText(item.title, 0, 0);
+        ctx.restore();
+
+        startAngle = endAngle;
+      });
+    }
 
     // Draw sectors
-    data.forEach((item) => {
-      const sliceAngle = (item.price / total) * Math.PI * 2;
-      const endAngle = startAngle + sliceAngle;
 
-      ctx.beginPath();
-      ctx.moveTo(centerX, centerY);
-      ctx.arc(centerX, centerY, radius, startAngle, endAngle);
-      ctx.closePath();
-      ctx.fillStyle = item.color;
-      ctx.fill();
-
-      // Border between sectors
-      ctx.strokeStyle = "#000";
-      ctx.lineWidth = 2;
-      ctx.stroke();
-
-      // Label
-      const midAngle = (startAngle + endAngle) / 2;
-      const textX = centerX + Math.cos(midAngle) * (radius * 0.75);
-      const textY = centerY + Math.sin(midAngle) * (radius * 0.75);
-      ctx.fillStyle = "#fff";
-      ctx.font = "14px sans-serif";
-      ctx.textAlign = "center";
-      ctx.textBaseline = "middle";
-      ctx.save();
-      ctx.translate(textX, textY);
-      ctx.rotate(midAngle);
-      ctx.fillText(item.title, 0, 0);
-      ctx.restore();
-
-      startAngle = endAngle;
-    });
     const arrowWidth = 40;
     const arrowHeight = 50;
     const offsetY = centerY - radius - 20;
@@ -93,7 +135,13 @@ export const useWheelState = () => {
   };
   const findWinnerIndex = (angle: number) => {
     if (!data) return -1;
-    const total = data.reduce((sum, item) => sum + item.price, 0);
+    let total;
+    if (type == "new") {
+      total = data.reduce((sum, item) => sum + 1 / item.price, 0);
+    } else {
+      total = data.reduce((sum, item) => sum + item.price, 0);
+    }
+
     let startAngle = 0;
 
     // Смещаем угол, чтобы учитывать стрелку сверху (на -π/2)
@@ -103,7 +151,12 @@ export const useWheelState = () => {
     // Убедились, что результат всегда положительный
 
     for (let i = 0; i < data.length; i++) {
-      const sliceAngle = (data[i].price / total) * 2 * Math.PI;
+      let sliceAngle;
+      if (type === "new") {
+        sliceAngle = (1 / data[i].price / total) * 2 * Math.PI;
+      } else {
+        sliceAngle = (data[i].price / total) * 2 * Math.PI;
+      }
       if (
         normalizedAngle >= startAngle &&
         normalizedAngle < startAngle + sliceAngle
@@ -131,11 +184,9 @@ export const useWheelState = () => {
   };
   const handleRotate = (duration: number = 4000) => {
     if (spinningRef.current) return;
-    console.log("123");
     setSpinning(true);
 
     const finalRotation = Math.random() * 2 * Math.PI + 10 * 2 * Math.PI;
-    // 10 полных оборотов + случайный угол
 
     const startAngle = angleRef.current;
 
@@ -151,10 +202,26 @@ export const useWheelState = () => {
         setSpinning(false);
 
         const winnerIndex = findWinnerIndex(finalRotation);
+        if (type == "new") {
+          if (data?.length == 1) {
+            toast.success("Побеждает: " + data?.[winnerIndex]?.title, {
+              duration: 3000,
+            });
+          } else {
+            if (data?.[winnerIndex]) {
+              removeItem(data?.[winnerIndex].id);
+            }
+            toast.success("Выбывает: " + data?.[winnerIndex]?.title, {
+              duration: 3000,
+            });
+          }
+        } else {
+          toast.success("Победитель: " + data?.[winnerIndex]?.title, {
+            duration: 3000,
+          });
+        }
         console.log("Winner Index:", data?.[winnerIndex]);
-        toast.success("Победитель: " + data?.[winnerIndex]?.title, {
-          duration: 3000,
-        });
+
         return;
       }
 

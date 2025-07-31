@@ -1,18 +1,26 @@
-import { useWheelState } from "../model/use-wheel-state";
-import { useWheelPageState } from "../model/use-wheelPage-state";
-import Wheel from "./wheel";
+import NewWheel from "./newWheel";
+import ClassicWheel from "./wheel";
+
 import WheelItems from "./wheelItems";
-import WheelSettings from "./wheelSettings";
+
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/shared/ui/tabs";
 
 export const WheelPage = () => {
-  useWheelPageState();
-  const { canvasRef, handleRotate } = useWheelState();
-
   return (
-    <div className="flex items-center justify-between">
+    <div className="flex items-center justify-between mt-5">
       <WheelItems />
-      <Wheel customRef={canvasRef} />
-      <WheelSettings handleRotate={handleRotate} />
+      <Tabs defaultValue="classic">
+        <TabsList>
+          <TabsTrigger value="classic">Classic</TabsTrigger>
+          <TabsTrigger value="new">New</TabsTrigger>
+        </TabsList>
+        <TabsContent value="classic">
+          <ClassicWheel />
+        </TabsContent>
+        <TabsContent value="new">
+          <NewWheel />
+        </TabsContent>
+      </Tabs>
     </div>
   );
 };

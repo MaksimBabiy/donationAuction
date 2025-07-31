@@ -1,10 +1,8 @@
 import { Button } from "@/shared/ui/button";
-import React from "react";
+
 import { Link } from "react-router";
 
-type Props = {};
-
-export const WheelButton = (props: Props) => {
+export const WheelButton = () => {
   return (
     <Link to="/wheel">
       <Button
